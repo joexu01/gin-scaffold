@@ -27,7 +27,7 @@ func TranslationMiddleware() gin.HandlerFunc {
 		validate := validator.New()
 
 		//根据参数取翻译器实例
-		locale := c.DefaultQuery("locale", "zhLang")
+		locale := c.DefaultQuery("locale", "zh")
 		trans, _ := uni.GetTranslator(locale)
 
 		//翻译器注册到validator

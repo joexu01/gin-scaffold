@@ -10,6 +10,23 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title           Example API
+// @version         1.0
+// @description     This is a sample server.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8880
+// @BasePath  /api/v1
+
+// @securityDefinitions.basic  BasicAuth
+
 func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	docs.SwaggerInfo.Title = lib.GetStringConf("base.swagger.title")
 	docs.SwaggerInfo.Description = lib.GetStringConf("base.swagger.desc")
