@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func DefaultGetValidParams(c *gin.Context, params interface{}) error {
+func GetValidParamsI18n(c *gin.Context, params interface{}) error {
 	if err := c.ShouldBind(params); err != nil {
 		return err
 	}
@@ -28,6 +28,26 @@ func DefaultGetValidParams(c *gin.Context, params interface{}) error {
 		var sliceErrs []string
 		for _, e := range errs {
 			sliceErrs = append(sliceErrs, e.Translate(trans))
+		}
+		return errors.New(strings.Join(sliceErrs, ","))
+	}
+	return nil
+}
+
+func GetValidParamsDefault(c *gin.Context, params interface{}) error {
+	if err := c.ShouldBind(params); err != nil {
+		return err
+	}
+	valid, err := GetValidator(c)
+	if err != nil {
+		return err
+	}
+	err = valid.Struct(params)
+	if err != nil {
+		errs := err.(validator.ValidationErrors)
+		var sliceErrs []string
+		for _, e := range errs {
+			sliceErrs = append(sliceErrs, e.Error())
 		}
 		return errors.New(strings.Join(sliceErrs, ","))
 	}

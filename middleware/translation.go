@@ -14,6 +14,8 @@ import (
 	"reflect"
 )
 
+// 使用此中间件时必须搭配 GetValidParamsI18n() 方法来验证
+
 func TranslationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//参照：https://github.com/go-playground/validator/blob/v9/_examples/translations/main.go

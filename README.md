@@ -1,9 +1,12 @@
 **Update Docs**
 
 ```shell
-swag init -g router/router.go
+# 1.16 及以上版本
+$ go install github.com/swaggo/swag/cmd/swag@latest
 
-go run main.go
+$ swag init -g router/router.go
+
+$ go run main.go
 ```
 
 访问：localhost:8880/swagger/index.html

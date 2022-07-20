@@ -50,7 +50,8 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	apiNormalGroup.Use(sessions.Sessions("gin-session", store),
 		middleware.RecoveryMiddleware(),
 		middleware.RequestLog(),
-		middleware.TranslationMiddleware())
+		middleware.ValidatorBasicMiddleware(),
+	)
 	{
 		// controller.ApiRegister(apiNormalGroup)
 	}
@@ -62,7 +63,8 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		middleware.RecoveryMiddleware(),
 		middleware.RequestLog(),
 		middleware.SessionAuthMiddleware(),
-		middleware.TranslationMiddleware())
+		middleware.ValidatorBasicMiddleware(),
+	)
 	{
 		//controller.ApiLoginRegister(apiAuthGroup)
 	}
