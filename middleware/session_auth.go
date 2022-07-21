@@ -10,7 +10,7 @@ import (
 func SessionAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		if name, ok := session.Get(public.RedisSessionName).(string); !ok || name == "" {
+		if name, ok := session.Get(public.UserSessionKey).(string); !ok || name == "" {
 			ResponseError(c, InternalErrorCode, errors.New("user not login"))
 			c.Abort()
 			return

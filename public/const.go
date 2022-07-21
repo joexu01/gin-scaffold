@@ -4,5 +4,5 @@ const (
 	ValidatorKey  = "ValidatorKey"
 	TranslatorKey = "TranslatorKey"
 
-	RedisSessionName = "server-session"
+	UserSessionKey = "gin-session"
 )

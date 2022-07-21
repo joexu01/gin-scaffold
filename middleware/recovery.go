@@ -7,6 +7,7 @@ import (
 	"github.com/joexu01/gin-scaffold/lib"
 	"github.com/joexu01/gin-scaffold/public"
 	"runtime/debug"
+	"strings"
 )
 
 func RecoveryMiddleware() gin.HandlerFunc {
@@ -14,10 +15,12 @@ func RecoveryMiddleware() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				//先做一下日志记录
-				fmt.Println(string(debug.Stack()))
+				stack := strings.Replace(string(debug.Stack()), `\n`, "\n", -1)
+
+				fmt.Println(stack)
 				public.CommonLogNotice(c, "_com_panic", map[string]interface{}{
 					"error": fmt.Sprint(err),
-					"stack": string(debug.Stack()),
+					"stack": stack,
 				})
 
 				if lib.ConfBase.DebugMode != "debug" {

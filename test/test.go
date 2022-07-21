@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 func main() {
 	//connStr := "root:atk_2018@tcp(127.0.0.1:3306)/gin_test?charset=utf8mb4&parseTime=True&loc=Local"
 	//db, err := gorm.Open(mysql.Open(connStr), &gorm.Config{})
@@ -48,6 +52,5 @@ func main() {
 	//fmt.Println(user1.Email)
 	//fmt.Printf("%+v", result)
 
-	s := "hello"
-	println(len(s))
+	fmt.Printf("%s", string("hello\n\n\n"))
 }

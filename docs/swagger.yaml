@@ -1,19 +1,86 @@
-basePath: /api/v1
-host: localhost:8880
+definitions:
+  dto.UserLoginInput:
+    properties:
+      password:
+        description: 管理员密码
+        example: "123456"
+        type: string
+      username:
+        description: 管理员用户名
+        example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.UserLoginOutput:
+    properties:
+      token:
+        description: 返回的Token
+        example: token
+        type: string
+    type: object
+  middleware.Response:
+    properties:
+      data: {}
+      err_msg:
+        type: string
+      errno:
+        type: integer
+      stack: {}
+      trace_id: {}
+    type: object
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
-  description: This is a sample server.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: Example API
-  version: "1.0"
-paths: {}
-securityDefinitions:
-  BasicAuth:
-    type: basic
+  contact: {}
+paths:
+  /user-logout/logout:
+    get:
+      consumes:
+      - application/json
+      description: 就是用户登出呗
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: 用户登出
+      tags:
+      - user
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: 就是用户登录呗
+      parameters:
+      - description: 用户登录输入
+        in: body
+        name: struct
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/middleware.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserLoginOutput'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: 用户登录
+      tags:
+      - user
 swagger: "2.0"

@@ -46,7 +46,7 @@ func NewConsoleWriter() *ConsoleWriter {
 
 func (w *ConsoleWriter) Write(r *Record) error {
 	if w.color {
-		_, _ = fmt.Fprint(os.Stdout, ((*colorRecord)(r)).String())
+		_, _ = fmt.Fprintf(os.Stdout, "%s", (*colorRecord)(r).String())
 	} else {
 		_, _ = fmt.Fprint(os.Stdout, r.String())
 	}

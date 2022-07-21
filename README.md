@@ -10,3 +10,15 @@ $ go run main.go
 ```
 
 访问：localhost:8880/swagger/index.html
+
+
+
+---
+
+[Gin Docs](https://gin-gonic.com/docs/)
+
+[Gorm Docs](https://gorm.io/zh_CN/docs/)
+
+[bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
+
+

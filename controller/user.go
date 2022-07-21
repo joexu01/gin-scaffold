@@ -8,19 +8,28 @@ import (
 	"github.com/joexu01/gin-scaffold/dto"
 	"github.com/joexu01/gin-scaffold/lib"
 	"github.com/joexu01/gin-scaffold/middleware"
+	"github.com/joexu01/gin-scaffold/public"
 	"net/http"
-	"strconv"
 	"time"
 )
 
-type UserController struct {
-}
+type UserController struct{}
 
 func UserControllerRegister(group *gin.RouterGroup) {
 	user := &UserController{}
 	group.POST("/login", user.UserLogin)
 }
 
+// UserLogin godoc
+// @Summary      用户登录
+// @Description  就是用户登录呗
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        struct body dto.UserLoginInput true "用户登录输入"
+// @Success      200  {object}  middleware.Response{data=dto.UserLoginOutput} "success"
+// @Failure      500  {object}  middleware.Response
+// @Router       /user/login [post]
 func (u *UserController) UserLogin(c *gin.Context) {
 	params := new(dto.UserLoginInput)
 	if err := params.BindValidParam(c); err != nil {
@@ -41,7 +50,7 @@ func (u *UserController) UserLogin(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("user_token", "123", 3600, "/", "localhost", false, true)
+	//c.SetCookie("user_token", "123", 3600, "/", "localhost", false, true)
 
 	sessInfo := &dto.UserSessionInfo{
 		Id:        user.Id,
@@ -56,5 +65,10 @@ func (u *UserController) UserLogin(c *gin.Context) {
 	}
 
 	session := sessions.Default(c)
-	session.Set("user_id_"+strconv.Itoa(user.Id), string(bytes))
+	//sessKey := "user_id_" + strconv.Itoa(user.Id)
+	session.Set(public.UserSessionKey, string(bytes))
+	_ = session.Save()
+
+	out := dto.UserLoginOutput{Token: string(bytes)}
+	middleware.ResponseSuccess(c, out)
 }

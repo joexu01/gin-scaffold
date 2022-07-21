@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/joexu01/gin-scaffold/controller"
 	"github.com/joexu01/gin-scaffold/docs"
 	"github.com/joexu01/gin-scaffold/lib"
 	"github.com/joexu01/gin-scaffold/middleware"
@@ -44,29 +45,30 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	})
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	//非登陆接口
 	store := sessions.NewCookieStore([]byte("secret"))
-	apiNormalGroup := router.Group("/api")
-	apiNormalGroup.Use(sessions.Sessions("gin-session", store),
-		middleware.RecoveryMiddleware(),
-		middleware.RequestLog(),
-		middleware.ValidatorBasicMiddleware(),
-	)
-	{
-		// controller.ApiRegister(apiNormalGroup)
-	}
 
-	//登陆接口
-	apiAuthGroup := router.Group("/api")
-	apiAuthGroup.Use(
+	// User Login
+	userGroup := router.Group("/user")
+	userGroup.Use(
 		sessions.Sessions("gin-session", store),
 		middleware.RecoveryMiddleware(),
 		middleware.RequestLog(),
-		middleware.SessionAuthMiddleware(),
 		middleware.ValidatorBasicMiddleware(),
 	)
 	{
-		//controller.ApiLoginRegister(apiAuthGroup)
+		controller.UserControllerRegister(userGroup)
+	}
+
+	logoutGroup := router.Group("/user-logout")
+	logoutGroup.Use(
+		sessions.Sessions("gin-session", store),
+		middleware.RecoveryMiddleware(),
+		middleware.RequestLog(),
+		middleware.ValidatorBasicMiddleware(),
+		middleware.SessionAuthMiddleware(),
+	)
+	{
+		controller.UserLogoutRegister(logoutGroup)
 	}
 
 	return router
