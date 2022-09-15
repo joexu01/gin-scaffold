@@ -37,6 +37,8 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	router := gin.Default()
+	// 跨域请求
+	router.Use(middleware.Cors())
 	router.Use(middlewares...)
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -47,8 +49,16 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 
 	store := sessions.NewCookieStore([]byte("secret"))
 
+	apiGroup := router.Group("/api")
+	apiGroup.Use(
+		sessions.Sessions("gin-session", store),
+		middleware.RecoveryMiddleware(),
+		middleware.RequestLog(),
+		middleware.ValidatorBasicMiddleware(),
+	)
+
 	// User Login
-	userGroup := router.Group("/user")
+	userGroup := apiGroup.Group("/user-login")
 	userGroup.Use(
 		sessions.Sessions("gin-session", store),
 		middleware.RecoveryMiddleware(),
@@ -56,19 +66,20 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		middleware.ValidatorBasicMiddleware(),
 	)
 	{
-		controller.UserControllerRegister(userGroup)
+		controller.LoginControllerRegister(userGroup)
 	}
 
-	logoutGroup := router.Group("/user-logout")
+	logoutGroup := apiGroup.Group("/user")
 	logoutGroup.Use(
 		sessions.Sessions("gin-session", store),
 		middleware.RecoveryMiddleware(),
 		middleware.RequestLog(),
 		middleware.ValidatorBasicMiddleware(),
-		middleware.SessionAuthMiddleware(),
+		//middleware.SessionAuthMiddleware(),
+		middleware.JwtAuthMiddleware(),
 	)
 	{
-		controller.UserLogoutRegister(logoutGroup)
+		controller.UserRegister(logoutGroup)
 	}
 
 	return router

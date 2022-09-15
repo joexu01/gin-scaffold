@@ -30,6 +30,8 @@ type User struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"`
 	IsDelete  int       `json:"is_delete" gorm:"column:is_delete"`
+	UserRole  int       `json:"user_role" gorm:"column:user_role"`
+	Role      Role      `json:"role" gorm:"foreignKey: UserRole"`
 }
 
 func (u *User) TableName() string {
@@ -56,13 +58,64 @@ func (u *User) LoginCheck(c *gin.Context, dbConn *gorm.DB, param *dto.UserLoginI
 
 func (u *User) Find(_ *gin.Context, tx *gorm.DB, search *User) (*User, error) {
 	out := &User{}
-	err := tx.Where(search).Find(out).Error
+	err := tx.Model(out).Where(search).Find(out).Error
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
+func (u *User) FindForFrontMe(_ *gin.Context, tx *gorm.DB, search *User) (*UserInfoForFrontMe, error) {
+	out := &UserInfoForFrontMe{}
+	err := tx.Table(u.TableName()).Select("user.id, user.username, user.email, user.created_at, role.desc").Joins("join role on user.user_role = role.id").
+		Where("user.id = ?", search.Id).First(out).Error
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (u *User) PageList(_ *gin.Context, tx *gorm.DB, param *dto.UserListQueryInput) (total int64, userList []UserInfo, err error) {
+	query := tx.Table(u.TableName()).Joins("join role on user.user_role = role.id").
+		Where("user.is_delete=0")
+
+	offset := (param.PageNo - 1) * param.PageSize
+	if err = query.Limit(param.PageSize).Offset(offset).Order("user.id desc").Scan(&userList).Error; err != gorm.ErrRecordNotFound && err != nil {
+		return 0, nil, err
+	}
+	query.Limit(param.PageSize).Offset(offset).Count(&total)
+	return total, userList, nil
+}
+
 func (u *User) Save(_ *gin.Context, tx *gorm.DB) error {
 	return tx.Save(u).Error
+}
+
+type UserInfo struct {
+	Id        int       `json:"id" gorm:"column:user.id"`
+	Username  string    `json:"username" gorm:"column:username"`
+	Email     string    `json:"email" gorm:"column:email"`
+	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"`
+	IsDelete  int       `json:"is_delete" gorm:"column:is_delete"`
+	UserRole  int       `json:"user_role" gorm:"column:user_role"`
+	Role      string    `json:"role" gorm:"column:desc"`
+}
+
+type UserInfoForFrontMe struct {
+	Id        int       `json:"accountId" gorm:"column:id"`
+	Username  string    `json:"name" gorm:"column:username"`
+	Email     string    `json:"email" gorm:"column:email"`
+	CreatedAt time.Time `json:"registrationDate" gorm:"column:created_at"`
+	Role      string    `json:"role" gorm:"column:desc"`
+}
+
+type Role struct {
+	Id              int    `json:"id" gorm:"column:id"`
+	Desc            string `json:"desc" gorm:"column:desc"`
+	PermissionValue int    `json:"permission_value" gorm:"column:permission_value"`
+}
+
+func (r *Role) TableName() string {
+	return "role"
 }

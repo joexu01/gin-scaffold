@@ -52,7 +52,7 @@ func HttpsServerRun() {
 	}
 	go func() {
 		log.Printf(" [INFO] HttpServerRun:%s\n", lib.GetStringConf("base.http.addr"))
-		if err := HttpSrvHandler.ListenAndServeTLS("certs/server.pem", "certs/private.key"); err != nil {
+		if err := HttpSrvHandler.ListenAndServeTLS("certs/server.crt", "certs/private.key"); err != nil {
 			log.Fatalf(" [ERROR] HttpServerRun:%s err:%v\n", lib.GetStringConf("base.http.addr"), err)
 		}
 	}()
